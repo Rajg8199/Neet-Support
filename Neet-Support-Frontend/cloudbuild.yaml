@@ -1,0 +1,38 @@
+steps:
+  # Step 1: SSH into the VM instance and pull the latest changes from GitHub
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh mayank@web-frontend --zone=asia-south1-a --command "cd /home/mayank/Neet-Support-Frontend && git pull origin main" || echo 'Git pull failed' >&2
+
+  # Step 2: Install dependencies using npm on the VM instance
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh mayank@web-frontend --zone=asia-south1-a --command "cd /home/mayank/Neet-Support-Frontend && npm install" || echo 'NPM install failed' >&2
+
+  # Step 3: Build the frontend on the VM instance
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh mayank@web-frontend --zone=asia-south1-a --command "cd /home/mayank/Neet-Support-Frontend && npm run build" || echo 'Build failed' >&2
+
+  # Step 4: Restart the Nginx server on the VM instance to apply the changes
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh mayank@web-frontend --zone=asia-south1-a --command "sudo systemctl restart nginx" || echo 'Nginx restart failed' >&2
+
+# Timeout for the entire build process
+timeout: '1200s' # 20 minutes
+
+options:
+  logging: CLOUD_LOGGING_ONLY

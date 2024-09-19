@@ -1,0 +1,9 @@
+.mentor-card__overlay a {
+    color: #ffffff;
+    font-size: 20px;
+  }
+  
+  .mentor-card__overlay a:hover {
+    color: #ffffff !important;
+  }
+  
